@@ -4,33 +4,37 @@ import io.mycat.mycat2.sqlannotations.SQLAnnotation;
 import io.mycat.mycat2.sqlannotations.SQLAnnotationList;
 import io.mycat.mycat2.sqlparser.BufferSQLContext;
 import io.mycat.mycat2.sqlparser.BufferSQLParser;
-import io.mycat.mycat2.sqlparser.byteArrayInterface.dynamicAnnotation.impl.*;
+import io.mycat.mycat2.sqlparser.byteArrayInterface.dynamicAnnotation.impl.ActonFactory;
+import io.mycat.mycat2.sqlparser.byteArrayInterface.dynamicAnnotation.impl.DynamicAnnotation;
+import io.mycat.mycat2.sqlparser.byteArrayInterface.dynamicAnnotation.impl.DynamicAnnotationKeyRoute;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by jamie on 2017/9/15.
  */
 public class DynamicAnnotationManagerImpl implements DynamicAnnotationManager {
-    //  AnnotationSchemaList annotations;
-    public static final String annotation_list = "annotations";
-    public static final String schema_tag = "schema_tag";
-    public static final String schema_name = "name";
-    public static final String match_list = "matches";
-    public static final String match_tag = "match";
-    public static final String match_name = "name";
-    public static final String match_state = "state";
-    public static final String match_sqltype = "sqltype";
-    public static final String match_where = "where";
-    public static final String match_tables = "tables";
-    public static final String match_actions = "actions";
-    final DynamicAnnotationKeyRoute route;
-    final Map<Integer, DynamicAnnotation[]> cache;
-    final Map<Integer, List<SQLAnnotationList>> schemaWithSQLtypeFunction = new HashMap<>();
+    private static DynamicAnnotationManagerImpl ourInstance = new DynamicAnnotationManagerImpl();
+
+    public static DynamicAnnotationManagerImpl getInstance() {
+        return ourInstance;
+    }
+
+    DynamicAnnotationKeyRoute route;
+    Map<Integer, DynamicAnnotation[]> cache;
+    Map<Integer, List<SQLAnnotationList>> schemaWithSQLtypeFunction = new HashMap<>();
     private static final Logger logger = LoggerFactory.getLogger(DynamicAnnotationManagerImpl.class);
+
+    private DynamicAnnotationManagerImpl() {
+
+    }
+
     public DynamicAnnotationManagerImpl(String actionsPath, String annotationsPath, Map<Integer, DynamicAnnotation[]> cache) throws Exception {
        try {
            ActonFactory actonFactory = new ActonFactory(actionsPath);
@@ -265,5 +269,17 @@ public class DynamicAnnotationManagerImpl implements DynamicAnnotationManager {
         sqlParser.parse(str.getBytes(), context);
         //  INSERT(14), DELETE(13), REPLACE(15), SELECT(11), UPDATE(12);
         manager.process("schemA",12 , new String[]{"x1"}, context).run();
+    }
+
+    public DynamicAnnotationKeyRoute getRoute() {
+        return route;
+    }
+
+    public Map<Integer, DynamicAnnotation[]> getCache() {
+        return cache;
+    }
+
+    public Map<Integer, List<SQLAnnotationList>> getSchemaWithSQLtypeFunction() {
+        return schemaWithSQLtypeFunction;
     }
 }

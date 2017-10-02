@@ -16,6 +16,12 @@ import java.util.stream.Collectors;
  * Created by jamie on 2017/9/10.
  */
 public class ActonFactory {
+    private static ActonFactory ourInstance = new ActonFactory();
+
+    public static ActonFactory getInstance() {
+        return ourInstance;
+    }
+
     String config = null;
     HashMap<String, Class<SQLAnnotation>> resMap;
     
@@ -114,6 +120,14 @@ public class ActonFactory {
         SQLAnnotationList annotations= actonFactory.get0("default",list);
     }
 
+    /**
+     * todo need review
+     */
+    private ActonFactory() {
+    }
+    /**
+     * todo need review
+     */
     public ActonFactory(String config) throws Exception {
         this.config = config.trim();
         URL url = ActonFactory.class.getClassLoader().getResource(config);
@@ -136,4 +150,7 @@ public class ActonFactory {
         return config;
     }
 
+    public HashMap<String, Class<SQLAnnotation>> getResMap() {
+        return resMap;
+    }
 }

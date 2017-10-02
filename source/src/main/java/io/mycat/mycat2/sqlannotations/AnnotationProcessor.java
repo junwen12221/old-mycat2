@@ -1,21 +1,18 @@
 package io.mycat.mycat2.sqlannotations;
 
-import java.nio.file.FileSystems;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardWatchEventKinds;
-import java.nio.file.WatchEvent;
-import java.nio.file.WatchKey;
-import java.nio.file.WatchService;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
-
 import io.mycat.mycat2.MycatSession;
 import io.mycat.mycat2.sqlparser.BufferSQLContext;
 import io.mycat.mycat2.sqlparser.byteArrayInterface.dynamicAnnotation.DynamicAnnotationManager;
 import io.mycat.mycat2.sqlparser.byteArrayInterface.dynamicAnnotation.DynamicAnnotationManagerImpl;
+import io.mycat.mycat2.sqlparser.byteArrayInterface.dynamicAnnotation.DynamicAnnotationMetrics;
+import io.mycat.mycat2.sqlparser.byteArrayInterface.dynamicAnnotation.TimerProvider;
+import io.mycat.mycat2.sqlparser.byteArrayInterface.dynamicAnnotation.impl.TimerProviderImpl;
 import io.mycat.proxy.ProxyRuntime;
+
+import java.nio.file.*;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Created by jamie on 2017/9/22.
@@ -27,6 +24,7 @@ public class AnnotationProcessor {
     private static final String ACTIONS_PATH = "actions.yml";
     private static final String ANNOTATIONS_PATH = "annotations.yml";
     private static WatchService watcher;
+    private static boolean isMeasured = true;
 
     public static AnnotationProcessor getInstance() {
         return ourInstance;
@@ -67,8 +65,17 @@ public class AnnotationProcessor {
             	intHashTables = new int[0];
             }
             try {
-                dynamicAnnotationManager.get().collect(schemaName,sqltype, intHashTables, context, collect);
-            return true;
+                if (isMeasured){
+                    DynamicAnnotationMetrics metrics = DynamicAnnotationMetrics.getInstance();
+                    TimerProvider timerProvider = TimerProviderImpl.getInstance();
+                    long start = timerProvider.getTime();
+                    dynamicAnnotationManager.get().collect(schemaName,sqltype, intHashTables, context, collect);
+                    long end = timerProvider.getTime();
+                    metrics.record(start, end, context, collect);
+                }else {
+                    dynamicAnnotationManager.get().collect(schemaName,sqltype, intHashTables, context, collect);
+                }
+                return true;
             } catch (Exception e) {
                 e.printStackTrace();
             }
