@@ -1,16 +1,9 @@
 package io.mycat.mycat2.cmds.strategy;
 
-import io.mycat.mycat2.cmds.ComChangeUserCmd;
-import io.mycat.mycat2.cmds.ComFieldListCmd;
-import io.mycat.mycat2.cmds.ComInitDB;
-import io.mycat.mycat2.cmds.ComQuitCmd;
-import io.mycat.mycat2.cmds.DirectPassthrouhCmd;
-import io.mycat.mycat2.cmds.NotSupportCmd;
+import io.mycat.mycat2.cmds.*;
+import io.mycat.mycat2.cmds.manager.MycatShowConfigsCmd;
 import io.mycat.mycat2.cmds.manager.MycatSwitchReplCmd;
-import io.mycat.mycat2.cmds.sqlCmds.SqlComBeginCmd;
-import io.mycat.mycat2.cmds.sqlCmds.SqlComCommitCmd;
-import io.mycat.mycat2.cmds.sqlCmds.SqlComRollBackCmd;
-import io.mycat.mycat2.cmds.sqlCmds.SqlComStartCmd;
+import io.mycat.mycat2.cmds.sqlCmds.*;
 import io.mycat.mycat2.sqlparser.BufferSQLContext;
 import io.mycat.mysql.packet.MySQLPacket;
 
@@ -67,7 +60,6 @@ public class DBInOneServerCmdStrategy extends AbstractCmdStrategy{
 		MYSQLCOMMANDMAP.put(BufferSQLContext.MYCAT_SWITCH_REPL, MycatSwitchReplCmd.INSTANCE);
 		//测试
 		MYSQLCOMMANDMAP.put(BufferSQLContext.SHOW_SQL, HBTDemoCmd2.INSTANCE);
-
 
 		MYSQLCOMMANDMAP.put(BufferSQLContext.MYCAT_SHOW_CONFIGS, MycatShowConfigsCmd.INSTANCE);
 	}
